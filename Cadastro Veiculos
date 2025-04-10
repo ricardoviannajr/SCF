@@ -1,0 +1,126 @@
+import { useState } from 'react';
+import { Menu, X, Truck, Wrench, Fuel, MapPin, FileText } from 'lucide-react';
+
+export default function CadastroVeiculos() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const [formData, setFormData] = useState({
+    placa: '', modelo: '', marca: '', ano: '', tipoCombustivel: '', capacidadeTanque: '', odometroAtual: '',
+  });
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const validarFormulario = () => {
+    const novosErros = {};
+    if (!formData.placa.trim()) novosErros.placa = 'Placa é obrigatória';
+    if (!formData.modelo.trim()) novosErros.modelo = 'Modelo é obrigatório';
+    if (!formData.marca.trim()) novosErros.marca = 'Marca é obrigatória';
+    if (!formData.ano || isNaN(Number(formData.ano))) novosErros.ano = 'Ano inválido';
+    if (!formData.tipoCombustivel) novosErros.tipoCombustivel = 'Tipo de combustível é obrigatório';
+    if (!formData.capacidadeTanque || isNaN(Number(formData.capacidadeTanque))) novosErros.capacidadeTanque = 'Capacidade inválida';
+    if (!formData.odometroAtual || isNaN(Number(formData.odometroAtual))) novosErros.odometroAtual = 'Odômetro inválido';
+    setErrors(novosErros);
+    return Object.keys(novosErros).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validarFormulario()) {
+      console.log('Dados enviados:', formData);
+    }
+  };
+
+  return (
+    <div className="bg-gray-50 min-h-screen flex">
+      <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0 z-30 transition duration-300 ease-in-out bg-blue-800 text-white w-64 flex flex-col`}>
+        <div className="flex items-center justify-between p-4 border-b border-blue-700">
+          <h2 className="text-xl font-bold">Menu Rápido</h2>
+          <button onClick={toggleSidebar} className="lg:hidden"><X size={24} /></button>
+        </div>
+        <nav className="flex-1 overflow-y-auto p-4 space-y-4">
+          <button className="flex items-center w-full p-3 bg-blue-700 hover:bg-blue-600 rounded-lg transition-colors">
+            <Truck size={20} className="mr-3" /><span className="font-medium">Veículos</span>
+          </button>
+          <button className="flex items-center w-full p-3 hover:bg-blue-700 rounded-lg transition-colors">
+            <Wrench size={20} className="mr-3" /><span className="font-medium">Manutenções</span>
+          </button>
+          <button className="flex items-center w-full p-3 hover:bg-blue-700 rounded-lg transition-colors">
+            <Fuel size={20} className="mr-3" /><span className="font-medium">Abastecimentos</span>
+          </button>
+          <button className="flex items-center w-full p-3 hover:bg-blue-700 rounded-lg transition-colors">
+            <MapPin size={20} className="mr-3" /><span className="font-medium">Roteiros</span>
+          </button>
+          <button className="flex items-center w-full p-3 hover:bg-blue-700 rounded-lg transition-colors">
+            <FileText size={20} className="mr-3" /><span className="font-medium">Relatórios</span>
+          </button>
+        </nav>
+      </div>
+
+      <div className="flex-1">
+        <header className="bg-blue-700 text-white shadow-md">
+          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="flex items-center">
+              <button onClick={toggleSidebar} className="mr-4"><Menu size={24} /></button>
+              <h1 className="text-2xl font-bold">Cadastro de Veículos</h1>
+            </div>
+            <span className="font-medium">Olá, Administrador</span>
+          </div>
+        </header>
+
+        <main className="container mx-auto px-4 py-6">
+          {sidebarOpen && <div className="fixed inset-0 bg-black bg-opacity-30 z-20 lg:hidden" onClick={toggleSidebar} />}
+
+          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 max-w-2xl mx-auto space-y-4">
+            <div>
+              <label className="block font-medium text-gray-700">Placa *</label>
+              <input type="text" name="placa" value={formData.placa} onChange={handleChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+              {errors.placa && <p className="text-red-600 text-sm mt-1">{errors.placa}</p>}
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700">Modelo *</label>
+              <input type="text" name="modelo" value={formData.modelo} onChange={handleChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+              {errors.modelo && <p className="text-red-600 text-sm mt-1">{errors.modelo}</p>}
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700">Marca *</label>
+              <input type="text" name="marca" value={formData.marca} onChange={handleChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+              {errors.marca && <p className="text-red-600 text-sm mt-1">{errors.marca}</p>}
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700">Ano *</label>
+              <input type="number" name="ano" value={formData.ano} onChange={handleChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+              {errors.ano && <p className="text-red-600 text-sm mt-1">{errors.ano}</p>}
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700">Tipo de Combustível *</label>
+              <select name="tipoCombustivel" value={formData.tipoCombustivel} onChange={handleChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                <option value="">Selecione</option>
+                <option value="Gasolina">Gasolina</option>
+                <option value="Etanol">Etanol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Flex">Flex</option>
+              </select>
+              {errors.tipoCombustivel && <p className="text-red-600 text-sm mt-1">{errors.tipoCombustivel}</p>}
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700">Capacidade do Tanque (L) *</label>
+              <input type="number" name="capacidadeTanque" value={formData.capacidadeTanque} onChange={handleChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+              {errors.capacidadeTanque && <p className="text-red-600 text-sm mt-1">{errors.capacidadeTanque}</p>}
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700">Odômetro Atual (km) *</label>
+              <input type="number" name="odometroAtual" value={formData.odometroAtual} onChange={handleChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+              {errors.odometroAtual && <p className="text-red-600 text-sm mt-1">{errors.odometroAtual}</p>}
+            </div>
+
+            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md shadow">Salvar Veículo</button>
+          </form>
+        </main>
+      </div>
+    </div>
+  );
+}
