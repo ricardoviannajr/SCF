@@ -1,0 +1,160 @@
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+
+const estadosBrasileiros = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
+  "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN",
+  "RS", "RO", "RR", "SC", "SP", "SE", "TO"
+];
+
+export default function RegistroAbastecimento() {
+  const [quantidade, setQuantidade] = useState(0);
+  const [valorLitro, setValorLitro] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [estadoSelecionado, setEstadoSelecionado] = useState("");
+  const [cidadeSelecionada, setCidadeSelecionada] = useState("");
+  const [posto, setPosto] = useState("");
+
+  const calcularTotal = (qtd, vlr) => {
+    const resultado = parseFloat(qtd) * parseFloat(vlr);
+    return isNaN(resultado) ? 0 : resultado;
+  };
+
+  const handleQuantidadeChange = (e) => {
+    const value = e.target.value;
+    setQuantidade(value);
+    setTotal(calcularTotal(value, valorLitro));
+  };
+
+  const handleValorLitroChange = (e) => {
+    const value = e.target.value;
+    setValorLitro(value);
+    setTotal(calcularTotal(quantidade, value));
+  };
+
+  return (
+    <Card className="max-w-4xl mx-auto mt-6 p-4">
+      <CardHeader>
+        <CardTitle className="text-xl">Registro de Abastecimento</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor="veiculo">Veículo</Label>
+          <Input id="veiculo" placeholder="Selecione ou digite o veículo" />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="dataHora">Data e Hora</Label>
+            <Input id="dataHora" type="datetime-local" />
+          </div>
+
+          <div>
+            <Label htmlFor="combustivel">Tipo de Combustível</Label>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="gasolina">Gasolina</SelectItem>
+                <SelectItem value="etanol">Etanol</SelectItem>
+                <SelectItem value="diesel">Diesel</SelectItem>
+                <SelectItem value="gnv">GNV</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <Label htmlFor="quantidade">Quantidade abastecida (L)</Label>
+            <Input
+              id="quantidade"
+              type="number"
+              value={quantidade}
+              onChange={handleQuantidadeChange}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="valorLitro">Valor por Litro (R$)</Label>
+            <Input
+              id="valorLitro"
+              type="number"
+              value={valorLitro}
+              onChange={handleValorLitroChange}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="total">Valor Total (R$)</Label>
+            <Input id="total" type="number" value={total.toFixed(2)} readOnly />
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="odometro">Odômetro Atual (km)</Label>
+          <Input id="odometro" type="number" />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="estado">Estado</Label>
+            <Select
+              onValueChange={(value) => {
+                setEstadoSelecionado(value);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o estado" />
+              </SelectTrigger>
+              <SelectContent>
+                {estadosBrasileiros.map((estado) => (
+                  <SelectItem key={estado} value={estado}>
+                    {estado}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="cidade">Cidade</Label>
+            <Input
+              id="cidade"
+              placeholder="Digite a cidade"
+              value={cidadeSelecionada}
+              onChange={(e) => setCidadeSelecionada(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="posto">Nome do Posto</Label>
+          <Input
+            id="posto"
+            placeholder="Digite o nome do posto de abastecimento"
+            value={posto}
+            onChange={(e) => setPosto(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="comprovante">Comprovante</Label>
+          <Input id="comprovante" type="file" />
+        </div>
+
+        {/* Aqui futuramente entra a média de consumo com base no abastecimento anterior */}
+      </CardContent>
+    </Card>
+  );
+}
