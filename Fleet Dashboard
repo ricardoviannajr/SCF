@@ -1,0 +1,235 @@
+import { useState, useEffect } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AlertTriangle, Calendar, Clock, ChevronRight, Truck, Wrench, Fuel, FileText, MapPin, Menu, X } from 'lucide-react';
+
+export default function FleetDashboard() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [statistics, setStatistics] = useState({
+    activeVehicles: 42,
+    inactiveVehicles: 7,
+    activeRoutes: 15,
+    fuelConsumption: 4280
+  });
+
+  const [fuelData, setFuelData] = useState([
+    { name: 'HB20', consumo: 8.2 },
+    { name: 'Saveiro', consumo: 9.5 },
+    { name: 'S10', consumo: 6.8 },
+    { name: 'Strada', consumo: 10.1 },
+    { name: 'Ônix', consumo: 11.4 },
+    { name: 'Spin', consumo: 9.2 },
+  ]);
+
+  const [maintenanceEvents, setMaintenanceEvents] = useState([
+    { id: 1, vehicle: 'HB20 - ABC-1234', type: 'Troca de óleo', date: '15/04/2025', status: 'pending' },
+    { id: 2, vehicle: 'Saveiro - DEF-5678', type: 'Revisão completa', date: '22/04/2025', status: 'pending' },
+    { id: 3, vehicle: 'S10 - GHI-9012', type: 'Troca de pneus', date: '28/04/2025', status: 'pending' },
+    { id: 4, vehicle: 'Strada - JKL-3456', type: 'Troca de filtros', date: '05/04/2025', status: 'overdue' },
+    { id: 5, vehicle: 'Ônix - MNO-7890', type: 'Alinhamento', date: '10/04/2025', status: 'overdue' }
+  ]);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  }
+
+  return (
+    <div className="bg-gray-50 min-h-screen flex">
+      {/* Sidebar */}
+      <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0 z-30 transition duration-300 ease-in-out bg-blue-800 text-white w-64 flex flex-col`}>
+        <div className="flex items-center justify-between p-4 border-b border-blue-700">
+          <h2 className="text-xl font-bold">Menu Rápido</h2>
+          <button onClick={toggleSidebar} className="lg:hidden">
+            <X size={24} />
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4">
+          <nav className="space-y-4">
+            <button className="flex items-center w-full p-3 bg-blue-700 hover:bg-blue-600 rounded-lg transition-colors">
+              <Truck size={20} className="mr-3" />
+              <span className="font-medium">Veículos</span>
+            </button>
+            <button className="flex items-center w-full p-3 hover:bg-blue-700 rounded-lg transition-colors">
+              <Wrench size={20} className="mr-3" />
+              <span className="font-medium">Manutenções</span>
+            </button>
+            <button className="flex items-center w-full p-3 hover:bg-blue-700 rounded-lg transition-colors">
+              <Fuel size={20} className="mr-3" />
+              <span className="font-medium">Abastecimentos</span>
+            </button>
+            <button className="flex items-center w-full p-3 hover:bg-blue-700 rounded-lg transition-colors">
+              <MapPin size={20} className="mr-3" />
+              <span className="font-medium">Roteiros</span>
+            </button>
+            <button className="flex items-center w-full p-3 hover:bg-blue-700 rounded-lg transition-colors">
+              <FileText size={20} className="mr-3" />
+              <span className="font-medium">Relatórios</span>
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1">
+        <header className="bg-blue-700 text-white shadow-md">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <button onClick={toggleSidebar} className="mr-4">
+                  <Menu size={24} />
+                </button>
+                <h1 className="text-2xl font-bold">Sistema de Controle de Frota</h1>
+              </div>
+              <div>
+                <span className="font-medium">Olá, Administrador</span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-800">Dashboard da Frota</h2>
+            <div className="flex items-center mt-2 md:mt-0">
+              <Clock className="text-gray-500 mr-2" size={18} />
+              <span className="text-gray-500">Atualizado em 09/04/2025 às 10:30</span>
+            </div>
+          </div>
+
+          {/* Overlay for sidebar when open on mobile */}
+          {sidebarOpen && (
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-30 z-20 lg:hidden"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+
+          {/* Status Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500 font-medium">Veículos Ativos</p>
+                  <p className="text-2xl font-bold text-blue-600">{statistics.activeVehicles}</p>
+                </div>
+                <div className="bg-blue-100 p-3 rounded-full">
+                  <Truck className="text-blue-600" size={24} />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500 font-medium">Veículos Inativos</p>
+                  <p className="text-2xl font-bold text-gray-600">{statistics.inactiveVehicles}</p>
+                </div>
+                <div className="bg-gray-100 p-3 rounded-full">
+                  <Truck className="text-gray-600" size={24} />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500 font-medium">Roteiros em Andamento</p>
+                  <p className="text-2xl font-bold text-green-600">{statistics.activeRoutes}</p>
+                </div>
+                <div className="bg-green-100 p-3 rounded-full">
+                  <MapPin className="text-green-600" size={24} />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500 font-medium">Manutenções Pendentes</p>
+                  <p className="text-2xl font-bold text-orange-600">{maintenanceEvents.length}</p>
+                </div>
+                <div className="bg-orange-100 p-3 rounded-full">
+                  <Wrench className="text-orange-600" size={24} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Fuel Consumption Chart */}
+            <div className="lg:col-span-3 bg-white rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Consumo Médio por Veículo (km/L)</h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={fuelData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => `${value} km/L`} />
+                    <Bar dataKey="consumo" fill="#3B82F6" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+          
+          {/* Maintenance Events & Alerts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            {/* Upcoming Maintenance */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-800">Manutenções Pendentes</h3>
+                  <button className="text-sm text-blue-600 flex items-center">
+                    Ver todas <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  {maintenanceEvents
+                    .filter(event => event.status === 'pending')
+                    .map(event => (
+                      <div key={event.id} className="flex items-start p-3 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg">
+                        <Calendar className="text-blue-500 mr-3" size={20} />
+                        <div>
+                          <p className="font-medium">{event.vehicle}</p>
+                          <p className="text-sm text-gray-600">{event.type} - {event.date}</p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Overdue Maintenance */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-800">Alertas de Manutenção</h3>
+                  <button className="text-sm text-red-600 flex items-center">
+                    Ver todos <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  {maintenanceEvents
+                    .filter(event => event.status === 'overdue')
+                    .map(event => (
+                      <div key={event.id} className="flex items-start p-3 border-l-4 border-red-500 bg-red-50 rounded-r-lg">
+                        <AlertTriangle className="text-red-500 mr-3" size={20} />
+                        <div>
+                          <p className="font-medium">{event.vehicle}</p>
+                          <p className="text-sm text-gray-600">{event.type} - Vencida em {event.date}</p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
