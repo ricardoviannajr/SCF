@@ -1,0 +1,138 @@
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Select, SelectItem, SelectContent } from "@/components/ui/select";
+
+export default function RegistroManutencao() {
+  const [manutencoes, setManutencoes] = useState([]);
+  const [nova, setNova] = useState({
+    data: new Date(),
+    tipo: "preventiva",
+    servico: "",
+    fornecedor: "",
+    valor: "",
+    notas: "",
+  });
+  const [selecionada, setSelecionada] = useState(null);
+
+  useEffect(() => {
+    const dadosFicticios = [
+      {
+        data: new Date("2024-12-01"),
+        tipo: "preventiva",
+        servico: "Troca de óleo e filtros",
+        fornecedor: "Oficina AutoTop",
+        valor: "350.00",
+        notas: "Serviço rápido e eficiente."
+      },
+      {
+        data: new Date("2025-01-15"),
+        tipo: "corretiva",
+        servico: "Troca da bomba d'água",
+        fornecedor: "Mecânica Boa Vista",
+        valor: "870.00",
+        notas: "Peça substituída com garantia de 1 ano."
+      },
+      {
+        data: new Date("2025-03-10"),
+        tipo: "preventiva",
+        servico: "Revisão dos freios",
+        fornecedor: "Freios & Cia",
+        valor: "290.00",
+        notas: "Pastilhas e discos em bom estado."
+      }
+    ];
+    setManutencoes(dadosFicticios);
+  }, []);
+
+  const adicionarManutencao = () => {
+    setManutencoes((prev) => [...prev, nova]);
+    setNova({
+      data: new Date(),
+      tipo: "preventiva",
+      servico: "",
+      fornecedor: "",
+      valor: "",
+      notas: "",
+    });
+  };
+
+  const formatarData = (data) => {
+    return new Date(data).toLocaleDateString();
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+          <div>
+            <Label>Data da Manutenção</Label>
+            <Calendar selected={nova.data} onSelect={(date) => setNova({ ...nova, data: date })} />
+          </div>
+          <div>
+            <Label>Tipo</Label>
+            <Select value={nova.tipo} onValueChange={(tipo) => setNova({ ...nova, tipo })}>
+              <SelectContent>
+                <SelectItem value="preventiva">Preventiva</SelectItem>
+                <SelectItem value="corretiva">Corretiva</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Serviço Realizado</Label>
+            <Input value={nova.servico} onChange={(e) => setNova({ ...nova, servico: e.target.value })} />
+          </div>
+          <div>
+            <Label>Fornecedor</Label>
+            <Input value={nova.fornecedor} onChange={(e) => setNova({ ...nova, fornecedor: e.target.value })} />
+          </div>
+          <div>
+            <Label>Valor</Label>
+            <Input type="number" value={nova.valor} onChange={(e) => setNova({ ...nova, valor: e.target.value })} />
+          </div>
+          <div>
+            <Label>Notas Fiscais e Fotos</Label>
+            <Input type="file" multiple />
+          </div>
+          <div className="md:col-span-2">
+            <Label>Observações</Label>
+            <Textarea value={nova.notas} onChange={(e) => setNova({ ...nova, notas: e.target.value })} />
+          </div>
+          <div className="md:col-span-2">
+            <Button onClick={adicionarManutencao}>Salvar Manutenção</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold">Histórico de Manutenções</h2>
+        <div className="overflow-x-auto">
+          <div className="relative w-[90%] mx-auto flex items-center justify-between border-t-2 border-gray-300 py-6">
+            {manutencoes.map((m, i) => (
+              <div key={i} className="relative flex flex-col items-center text-center">
+                <button
+                  onClick={() => setSelecionada(selecionada === i ? null : i)}
+                  className="z-10 w-5 h-5 bg-blue-500 rounded-full border-2 border-white hover:scale-110 transition"
+                />
+                {selecionada === i && (
+                  <div className="absolute bottom-full mb-4 max-w-xs w-72 p-3 bg-white rounded-lg shadow-lg text-left z-20 transform -translate-x-1/2 left-1/2">
+                    <div className="text-sm text-gray-600">{formatarData(m.data)}</div>
+                    <div className="font-semibold break-words">{m.tipo === "preventiva" ? "💪" : "🔧"} {m.servico}</div>
+                    <div className="text-sm text-gray-700 break-words">Fornecedor: {m.fornecedor}</div>
+                    <div className="text-sm text-gray-700 break-words">Valor: R$ {m.valor}</div>
+                    <div className="text-sm text-gray-600 break-words">{m.notas}</div>
+                  </div>
+                )}
+                <div className="text-xs mt-2 whitespace-nowrap">{formatarData(m.data)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
