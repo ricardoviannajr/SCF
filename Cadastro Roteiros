@@ -1,0 +1,161 @@
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+export default function CadastroRoteiros() {
+  const [pontos, setPontos] = useState({ origem: "", destino: "", paradas: [] });
+  const [despesas, setDespesas] = useState("");
+  const [quilometragem, setQuilometragem] = useState("");
+  const [consumoEstimado, setConsumoEstimado] = useState("");
+  const [consumoReal, setConsumoReal] = useState("");
+  const [veiculoSelecionado, setVeiculoSelecionado] = useState("");
+
+  const veiculosMock = [
+    { id: "1", nome: "Caminhão 01", consumoMedio: 2.5 },
+    { id: "2", nome: "Van Escolar", consumoMedio: 6.2 },
+    { id: "3", nome: "Carro Administrativo", consumoMedio: 12.8 },
+  ];
+
+  const handleVeiculoChange = (id) => {
+    setVeiculoSelecionado(id);
+    const veiculo = veiculosMock.find((v) => v.id === id);
+    if (quilometragem && veiculo) {
+      setConsumoEstimado((parseFloat(quilometragem) / veiculo.consumoMedio).toFixed(2));
+    }
+  };
+
+  const handleQuilometragemChange = (value) => {
+    setQuilometragem(value);
+    const veiculo = veiculosMock.find((v) => v.id === veiculoSelecionado);
+    if (veiculo) {
+      setConsumoEstimado((parseFloat(value) / veiculo.consumoMedio).toFixed(2));
+    }
+  };
+
+  return (
+    <Card className="max-w-5xl mx-auto mt-6 p-4">
+      <CardHeader>
+        <CardTitle className="text-xl">Cadastro de Roteiros</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor="veiculo">Veículo</Label>
+          <Select onValueChange={handleVeiculoChange}>
+            <SelectTrigger id="veiculo">
+              <SelectValue placeholder="Selecione um veículo" />
+            </SelectTrigger>
+            <SelectContent>
+              {veiculosMock.map((v) => (
+                <SelectItem key={v.id} value={v.id}>{v.nome}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="inicio">Data de Início</Label>
+            <Input id="inicio" type="date" />
+          </div>
+          <div>
+            <Label htmlFor="fim">Data de Fim</Label>
+            <Input id="fim" type="date" />
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="origem">Ponto de Origem</Label>
+          <Input
+            id="origem"
+            value={pontos.origem}
+            onChange={(e) => setPontos({ ...pontos, origem: e.target.value })}
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="paradas">Paradas Intermediárias</Label>
+          <Textarea
+            id="paradas"
+            placeholder="Separe as paradas por vírgula"
+            value={pontos.paradas.join(", ")}
+            onChange={(e) =>
+              setPontos({ ...pontos, paradas: e.target.value.split(", ") })
+            }
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="destino">Destino</Label>
+          <Input
+            id="destino"
+            value={pontos.destino}
+            onChange={(e) => setPontos({ ...pontos, destino: e.target.value })}
+          />
+        </div>
+
+        <div>
+          <Label>Mapa do Roteiro</Label>
+          <div className="w-full h-96 bg-gray-100 border rounded flex items-center justify-center">
+            <span className="text-gray-500">
+              [Mapa interativo - em desenvolvimento]
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <Label htmlFor="quilometragem">Estimativa de Quilometragem</Label>
+            <Input
+              id="quilometragem"
+              value={quilometragem}
+              onChange={(e) => handleQuilometragemChange(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="consumoEstimado">Consumo Estimado (L)</Label>
+            <Input id="consumoEstimado" value={consumoEstimado} readOnly />
+          </div>
+
+          <div>
+            <Label htmlFor="consumoReal">Consumo Real (L)</Label>
+            <Input
+              id="consumoReal"
+              value={consumoReal}
+              onChange={(e) => setConsumoReal(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="despesas">Despesas da Viagem</Label>
+          <Textarea
+            id="despesas"
+            placeholder="Descreva as despesas da viagem"
+            value={despesas}
+            onChange={(e) => setDespesas(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="comprovantes">Upload de Comprovantes</Label>
+          <Input id="comprovantes" type="file" multiple />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
