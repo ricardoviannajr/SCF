@@ -1,5 +1,4 @@
-﻿# Contexto e Caderno do Projeto
-
-- **Nome do Caderno:** SCF github
-- **RepositÃ³rio GitHub:** https://github.com/ricardoviannajr/SCF
-- **Regra de Consulta RAG:** Antes de implementaÃ§Ãµes estruturais, consulte o caderno no NotebookLM via MCP.
+# Memória do Projeto no NotebookLM
+- Caderno: SCF github
+- Coleção: Projetos Antigravity
+- URL: https://notebook.google.com/notebook/fb144280-e77b-4deb-8f41-739bcace0831
